@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { User } from "../models/user.js";
 
 export const authCheck = async (req, res, next) => {
-  const { token } = req.cookies;
+  const { token } = req.cookies || req.headers;
   const { authorization } = req.headers;
 
   if (!token && !authorization) {
@@ -13,7 +13,10 @@ export const authCheck = async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify( token || authorization.split(" ")[1], process.env.JWT_SECRET);
+    const decoded = jwt.verify(
+      token || authorization.split(" ")[1],
+      process.env.JWT_SECRET
+    );
     req.user = await User.findById(decoded.id);
     next();
   } catch (error) {

@@ -9,7 +9,7 @@ import { carouselContent } from "../assets/dummyData";
 
 export default function Page() {
   const handleLogin = () => {
-    router.replace("/(tabs)/home");
+    router.replace("/(auth)/signin");
   };
   const handleSignup = () => {
     router.replace("/(tabs)/home");
@@ -24,7 +24,7 @@ export default function Page() {
   React.useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex((prevIndex) => (prevIndex + 1) % carouselContent.length);
-    }, 2000);
+    }, 3000);
     return () => {
       clearInterval(interval);
     };

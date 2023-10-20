@@ -14,8 +14,9 @@ export default function PrimaryButton({ text, onPress, loading }) {
         mode="contained"
         buttonColor="#265AE8"
         style={{
-          width: 300,
+          width: 335,
           padding: 10,
+          borderRadius: 6,
         }}
         labelStyle={{
           color: "#FFFFFF",

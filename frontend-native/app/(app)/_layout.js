@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { View, Text } from "react-native";
 import { Redirect, router } from "expo-router";
-import { useSession } from "./context/ctx";
+import { useSession } from "../context/ctx";
 
 export default function Page() {
   const { session, isLoading } = useSession();
@@ -28,5 +28,5 @@ export default function Page() {
   }
 
   // The component should not return anything here, as redirection will be handled in the useEffect.
-  return null;
+  return <Slot />;
 }

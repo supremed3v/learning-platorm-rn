@@ -1,8 +1,7 @@
 import { View, Text } from "react-native";
 import React from "react";
 import { Button } from "react-native-paper";
-
-export default function SecondaryButton({ text, onPress, loading }) {
+export default function CustomButton({ text, onPress, loading, bg, icon }) {
   return (
     <View
       style={{
@@ -12,19 +11,18 @@ export default function SecondaryButton({ text, onPress, loading }) {
     >
       <Button
         mode="contained"
-        buttonColor="#FFFFFF"
+        buttonColor={bg}
         style={{
           width: 335,
           padding: 10,
-          borderColor: "#265AE8",
-          borderWidth: 1,
           borderRadius: 6,
         }}
         labelStyle={{
-          color: "#265AE8",
+          color: "#0B121F",
           fontSize: 18,
         }}
-        onPress={onPress}
+        icon={icon}
+        onPress={onPress ? onPress : null}
         disabled={loading ? true : false}
       >
         {text}
