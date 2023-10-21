@@ -122,7 +122,10 @@ export const logoutUser = async (req, res, next) => {
 };
 
 export const getUser = async (req, res, next) => {
-  const user = await User.findById(req.user._id);
+  // Check if the user id is available in the request params or in the body
+
+  const userId = req.params.id || req.body.id || req.user._id;
+  const user = await User.findById(userId);
 
   if (!user) {
     return res.status(404).json({

@@ -33,7 +33,6 @@ export function useStorageState(key) {
       .then((value) => {
         if (value) {
           const deserializedValue = JSON.parse(value);
-          console.log("Retrieved value from SecureStore:", deserializedValue);
           setState(deserializedValue);
         }
       })
@@ -61,9 +60,6 @@ export function useStorageState(key) {
 
   const isTokenAvailable = state[0];
   const token = state[1];
-
-  console.log("Is token available:", isTokenAvailable);
-  console.log("Current token:", token);
 
   return { token, isTokenAvailable, setValue, loading };
 }

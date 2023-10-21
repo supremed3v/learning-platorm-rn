@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import axios from "axios";
 import { useStorageState } from "./useStateStorage";
 
@@ -16,7 +16,10 @@ export function SessionProvider({ children }) {
   const { token, isTokenAvailable, setValue, isLoading } =
     useStorageState("session"); // Get `isLoading`
 
+  console.log("token", token);
+
   const [apiResponse, setApiResponse] = React.useState(null);
+  const [user, setUser] = React.useState(null);
 
   const signIn = async (email, password) => {
     try {
@@ -41,6 +44,23 @@ export function SessionProvider({ children }) {
     setValue([false, null]);
   };
 
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        const response = await axios.get("http://192.168.18.8:8000/api/v1/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setUser(response.data.user);
+      } catch (error) {
+        console.error("Get user error:", error.message);
+      }
+    };
+
+    token !== null && getUser();
+  }, [token]);
+
   return (
     <AuthContext.Provider
       value={{
@@ -49,6 +69,8 @@ export function SessionProvider({ children }) {
         signIn,
         signOut,
         apiResponse,
+        token,
+        user,
       }}
     >
       {children}
