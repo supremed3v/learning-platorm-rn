@@ -16,10 +16,9 @@ export function SessionProvider({ children }) {
   const { token, isTokenAvailable, setValue, isLoading } =
     useStorageState("session"); // Get `isLoading`
 
-  console.log("token", token);
-
   const [apiResponse, setApiResponse] = React.useState(null);
   const [user, setUser] = React.useState(null);
+  const [courses, setCourses] = React.useState(null);
 
   const signIn = async (email, password) => {
     try {
@@ -61,6 +60,21 @@ export function SessionProvider({ children }) {
     token !== null && getUser();
   }, [token]);
 
+  useEffect(() => {
+    const getCourses = async () => {
+      try {
+        const response = await axios.get(
+          "http://192.168.18.8:8000/api/v1/course"
+        );
+        setCourses(response.data.courses);
+      } catch (error) {
+        console.error("Get courses error:", error.message);
+      }
+    };
+
+    getCourses();
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
@@ -71,6 +85,7 @@ export function SessionProvider({ children }) {
         apiResponse,
         token,
         user,
+        courses,
       }}
     >
       {children}

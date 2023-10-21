@@ -7,7 +7,6 @@ export default function Page() {
   const { session, loading } = useSession();
 
   useEffect(() => {
-    console.log("Session:", session);
     if (!loading) {
       setTimeout(() => {
         if (session !== null) {

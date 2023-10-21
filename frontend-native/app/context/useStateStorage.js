@@ -48,7 +48,6 @@ export function useStorageState(key) {
     (value) => {
       return setStorageItemAsync(key, value)
         .then(() => {
-          console.log("Value saved to SecureStore:", value);
           return setState(value);
         })
         .catch((error) => {
