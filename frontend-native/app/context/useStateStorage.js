@@ -2,41 +2,55 @@ import * as SecureStore from "expo-secure-store";
 import * as React from "react";
 
 function useAsyncState(initialValue = [false, null]) {
-  return React.useReducer(
-    (state, action = null) => [false, action],
-    initialValue
-  );
+  const [state, setState] = React.useState(initialValue);
+
+  const setAsyncState = (value) => {
+    return new Promise((resolve, reject) => {
+      setState(value);
+      resolve(value);
+    });
+  };
+
+  return [state, setAsyncState];
 }
 
 export async function setStorageItemAsync(key, value) {
   if (value == null) {
     await SecureStore.deleteItemAsync(key);
   } else {
-    await SecureStore.setItemAsync(key, value);
+    const serializedValue = JSON.stringify(value);
+    await SecureStore.setItemAsync(key, serializedValue);
   }
 }
 
 export function useStorageState(key) {
   const [state, setState] = useAsyncState();
 
+  const [loading, setLoading] = React.useState(true); // Add loading state
+
   React.useEffect(() => {
-    // Retrieve the data from SecureStore and update the state
     SecureStore.getItemAsync(key)
       .then((value) => {
-        console.log("Retrieved value from SecureStore:", value);
-        setState(value);
+        if (value) {
+          const deserializedValue = JSON.parse(value);
+          console.log("Retrieved value from SecureStore:", deserializedValue);
+          setState(deserializedValue);
+        }
       })
       .catch((error) => {
         console.error("Error while retrieving from SecureStore:", error);
+      })
+      .finally(() => {
+        setLoading(false); // Update loading state whether successful or not
       });
   }, [key]);
 
   const setValue = React.useCallback(
     (value) => {
-      setStorageItemAsync(key, value)
+      return setStorageItemAsync(key, value)
         .then(() => {
           console.log("Value saved to SecureStore:", value);
-          setState(value);
+          return setState(value);
         })
         .catch((error) => {
           console.error("Error while saving to SecureStore:", error);
@@ -45,7 +59,11 @@ export function useStorageState(key) {
     [key]
   );
 
-  console.log("Current session state:", state);
+  const isTokenAvailable = state[0];
+  const token = state[1];
 
-  return [state, setValue];
+  console.log("Is token available:", isTokenAvailable);
+  console.log("Current token:", token);
+
+  return { token, isTokenAvailable, setValue, loading };
 }

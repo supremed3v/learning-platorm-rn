@@ -1,6 +1,6 @@
 import React from "react";
-import { useStorageState } from "./useStateStorage";
 import axios from "axios";
+import { useStorageState } from "./useStateStorage";
 
 const AuthContext = React.createContext();
 
@@ -13,13 +13,14 @@ export function useSession() {
 }
 
 export function SessionProvider({ children }) {
-  const [[isLoading, session], setSession] = useStorageState("session");
+  const { token, isTokenAvailable, setValue, isLoading } =
+    useStorageState("session"); // Get `isLoading`
+
   const [apiResponse, setApiResponse] = React.useState(null);
 
   const signIn = async (email, password) => {
     try {
-      // Set isLoading to true during sign-in
-      setSession([true, session]);
+      setValue([true, token]);
 
       const response = await axios.post(
         "http://192.168.18.8:8000/api/v1/login",
@@ -29,35 +30,22 @@ export function SessionProvider({ children }) {
         }
       );
       setApiResponse(response.data.user);
-      setSession([false, response.data.token]); // Reset isLoading after successful sign-in
+      setValue([false, response.data.token]);
     } catch (error) {
       console.error("Sign-in error:", error);
-
-      // Ensure that isLoading is reset even in case of an error
-      setSession([false, session]);
+      setValue([false, token]);
     }
   };
 
   const signOut = () => {
-    try {
-      // Set isLoading to true during sign-out
-      setSession([true, session]);
-
-      // Perform sign-out operations, and then reset isLoading
-      setSession([false, null]);
-    } catch (error) {
-      console.error(error);
-
-      // Ensure that isLoading is reset even in case of an error
-      setSession([false, session]);
-    }
+    setValue([false, null]);
   };
 
   return (
     <AuthContext.Provider
       value={{
-        isLoading,
-        session,
+        isLoading, // Use `isLoading` from useStorageState
+        session: token ? token[1] : null,
         signIn,
         signOut,
         apiResponse,
