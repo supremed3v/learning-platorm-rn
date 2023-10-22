@@ -2,17 +2,26 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import cloudinary from "cloudinary";
-import connectDB from "./utils/connectDB.js";
 import userRoutes from "./routes/user.routes.js";
 import cookieParser from "cookie-parser";
 import courseRoutes from "./routes/course.routes.js";
 import stripeRoutes from "./routes/stripe.routes.js";
+import mongoose from "mongoose";
 
 dotenv.config();
 
 const app = express();
 
-connectDB();
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGODB_URI);
+    console.log(`MongoDB connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.log(`Error: ${error.message}`);
+    process.exit(1);
+  }
+};
+
 app.use(cors());
 app.use(cookieParser());
 app.use(express.json({ limit: "50mb" }));
@@ -29,9 +38,16 @@ app.use("/api/v1", userRoutes);
 app.use("/api/v1", courseRoutes);
 app.use("/api/v1", stripeRoutes);
 
-const server = app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// const server = app.listen(PORT, () => {
+//   console.log(`Server running on port ${PORT}`);
+// });
+
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
 });
+
 process.on("uncaughtException", (error) => {
   console.log("Uncaught Exception: ", error.message);
   console.log("Shutting down server due to uncaught exception");
