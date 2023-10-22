@@ -34,7 +34,7 @@ export default function CategorizedCourseLayout({ category }) {
   console.log("normalized category:", normalizedCategory);
 
   // Filter courses by category
-  const filteredCourses = courses.filter((course) => {
+  const filteredCourses = courses?.filter((course) => {
     // Debugging: Log the category of each course
     console.log("course category:", course.category);
 

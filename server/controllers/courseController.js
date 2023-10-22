@@ -6,9 +6,8 @@ import parseData from "../utils/dataParser.js";
 export const createCourse = async (req, res) => {
   const { title, description, category, amount } = req.body;
 
-  
-
-  const instructor = await User.findById(req.user._id);
+  const userId = req.params.id || req.body.id || req.user._id;
+  const instructor = await User.findById(userId);
 
   if (!instructor) {
     return res.status(400).json({
@@ -49,11 +48,10 @@ export const createCourse = async (req, res) => {
       amount,
     });
 
-
     instructor.paid_courses.push({
       course: course._id,
       price: course.amount,
-    })
+    });
 
     await instructor.save();
 
@@ -77,7 +75,6 @@ export const addLecture = async (req, res) => {
 
   const data = parseData(file);
 
-
   if (!data) {
     return res.status(400).json({
       error: "Please upload a valid video",
@@ -95,7 +92,7 @@ export const addLecture = async (req, res) => {
       resource_type: "video",
       folder: "courses",
       allowed_formats: ["mp4", "mov", "avi", "wmv", "webm", "flv", "mkv"],
-      chunk_size: 6000000, 
+      chunk_size: 6000000,
     });
 
     course.lectures.push({
@@ -199,8 +196,6 @@ export const updateLecture = async (req, res) => {
   try {
     const course = await Course.findById(req.params.id);
 
-    
-
     if (!course) {
       return res.status(400).json({
         error: "Course not found",
@@ -217,7 +212,7 @@ export const updateLecture = async (req, res) => {
 
     const { title, description } = req.body;
 
-    if(!title || !description) {
+    if (!title || !description) {
       lecture.title = title;
       lecture.description = description;
 
@@ -235,15 +230,21 @@ export const updateLecture = async (req, res) => {
         });
       }
 
-      const result = await cloudinary.v2.uploader.upload_large(
-        data.content,
-        {
-          resource_type: "video",
-          folder: "courses",
-          allowed_formats: ["mp4", "mov", "avi", "wmv", "webm", "flv", "mkv", "webm"],
-          chunk_size: 6000000,
-        }
-      );
+      const result = await cloudinary.v2.uploader.upload_large(data.content, {
+        resource_type: "video",
+        folder: "courses",
+        allowed_formats: [
+          "mp4",
+          "mov",
+          "avi",
+          "wmv",
+          "webm",
+          "flv",
+          "mkv",
+          "webm",
+        ],
+        chunk_size: 6000000,
+      });
 
       const result2 = await cloudinary.v2.uploader.destroy(
         lecture.video.public_id
@@ -320,10 +321,10 @@ export const removeCourse = async (req, res) => {
 
 export const userCourse = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id)
+    const user = await User.findById(req.user._id);
     const courseId = user.playList.map((item) => item.course);
 
-    const courses = await Course.find({ _id: { $in: courseId } })
+    const courses = await Course.find({ _id: { $in: courseId } });
 
     res.status(200).json({
       success: true,
@@ -343,11 +344,13 @@ export const getSingleUserCourse = async (req, res) => {
     const course = await Course.findById(id);
 
     // Check if course exists in user's playList
-    const courseIndex = user.playList.findIndex(item => item.course.toString() === course._id.toString());
+    const courseIndex = user.playList.findIndex(
+      (item) => item.course.toString() === course._id.toString()
+    );
     if (courseIndex === -1) {
       return res.status(400).json({
         error: "Course not found in user's playList",
-        success: false
+        success: false,
       });
     }
 
@@ -360,15 +363,14 @@ export const getSingleUserCourse = async (req, res) => {
       success: true,
       course,
       progress,
-      completed
+      completed,
     });
   } catch (error) {
     return res.status(500).json({
       error: error.message,
     });
   }
-}
-
+};
 
 export const addToPlaylist = async (req, res) => {
   const user = await User.findById(req.user._id);
@@ -420,48 +422,47 @@ export const getInstructorCourses = async (req, res) => {
   const instructor = await User.findById(req.user._id);
 
   try {
-    const courses = await Course.find({ instructor: instructor._id })
+    const courses = await Course.find({ instructor: instructor._id });
 
     res.status(200).json({
       success: true,
       courses,
     });
 
-    if(!courses){
+    if (!courses) {
       return res.status(400).json({
         error: "No courses found",
       });
     }
-
-  } catch(error){
+  } catch (error) {
     res.status(500).json({
       error: error.message,
       success: false,
     });
   }
-
-}
+};
 
 export const getInstructorCourse = async (req, res) => {
-  
   try {
-    const course = await Course.findById(req.params.id).populate("instructor", "name email")
+    const course = await Course.findById(req.params.id).populate(
+      "instructor",
+      "name email"
+    );
 
     res.status(200).json({
       success: true,
       course,
     });
 
-    if(!course){
+    if (!course) {
       return res.status(400).json({
         error: "Course not found",
       });
     }
-
-  } catch(error){
+  } catch (error) {
     res.status(500).json({
       error: error.message,
       success: false,
     });
   }
-}
+};

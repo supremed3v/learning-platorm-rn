@@ -25,7 +25,7 @@ export function SessionProvider({ children }) {
       setValue([true, token]);
 
       const response = await axios.post(
-        "http://192.168.18.8:8000/api/v1/login",
+        "https://sore-lion-scarf.cyclic.app/api/v1/login",
         {
           email,
           password,
@@ -46,11 +46,14 @@ export function SessionProvider({ children }) {
   useEffect(() => {
     const getUser = async () => {
       try {
-        const response = await axios.get("http://192.168.18.8:8000/api/v1/me", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axios.get(
+          "https://sore-lion-scarf.cyclic.app/api/v1/me",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setUser(response.data.user);
       } catch (error) {
         console.error("Get user error:", error.message);
@@ -64,7 +67,7 @@ export function SessionProvider({ children }) {
     const getCourses = async () => {
       try {
         const response = await axios.get(
-          "http://192.168.18.8:8000/api/v1/course"
+          "https://sore-lion-scarf.cyclic.app/api/v1/course"
         );
         setCourses(response.data.courses);
       } catch (error) {

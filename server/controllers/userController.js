@@ -137,6 +137,7 @@ export const getUser = async (req, res, next) => {
   res.status(200).json({
     success: true,
     user,
+    token: req.params.id ? null : req.cookies.token,
   });
 };
 
