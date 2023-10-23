@@ -68,8 +68,8 @@ export const createCourse = async (req, res) => {
 
 export const addLecture = async (req, res) => {
   const { title, description } = req.body;
-
-  const course = await Course.findById(req.params.id);
+  const courseId = req.params.id.trim(); // Trim any extra spaces
+  const course = await Course.findById(courseId);
 
   const file = req.file;
 

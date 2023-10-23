@@ -31,6 +31,7 @@ router.route("/single-course/:id").get(getSingleCourse);
 router
   .route("/course/add-lecture/:id")
   .post(authCheck, adminCheck("admin", "instructor"), singleFile, addLecture);
+
 router
   .route("/course/lecture/:id/:lectureId")
   .delete(
