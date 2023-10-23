@@ -68,7 +68,7 @@ export const createCourse = async (req, res) => {
 
 export const addLecture = async (req, res) => {
   const { title, description } = req.body;
-  const courseId = req.params.id.trim(); // Trim any extra spaces
+  const courseId = req.params.id.trim();
   const course = await Course.findById(courseId);
 
   const file = req.file;
@@ -94,6 +94,12 @@ export const addLecture = async (req, res) => {
       allowed_formats: ["mp4", "mov", "avi", "wmv", "webm", "flv", "mkv"],
       chunk_size: 3000000, // 3MB
     });
+
+    if (!result || !result.public_id) {
+      return res.status(500).json({
+        error: "Failed to upload the video",
+      });
+    }
 
     course.lectures.push({
       title,
