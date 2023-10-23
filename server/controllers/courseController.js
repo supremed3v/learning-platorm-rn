@@ -92,7 +92,7 @@ export const addLecture = async (req, res) => {
       resource_type: "video",
       folder: "courses",
       allowed_formats: ["mp4", "mov", "avi", "wmv", "webm", "flv", "mkv"],
-      chunk_size: 6000000,
+      chunk_size: 3000000, // 3MB
     });
 
     course.lectures.push({
