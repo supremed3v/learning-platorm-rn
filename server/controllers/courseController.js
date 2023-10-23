@@ -61,7 +61,7 @@ export const createCourse = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({
-      error: error,
+      error: error.message,
     });
   }
 };
