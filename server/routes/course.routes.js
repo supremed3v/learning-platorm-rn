@@ -11,7 +11,8 @@ import {
   getInstructorCourses,
   getSingleCourse,
   updateLecture,
-  getInstructorCourse
+  getInstructorCourse,
+  updateCourseDetails,
 } from "../controllers/courseController.js";
 
 const router = express.Router();
@@ -40,11 +41,18 @@ router
   )
   .put(authCheck, adminCheck("admin", "instructor"), singleFile, updateLecture);
 
-router.route("/instructor/course/:id").get(authCheck, adminCheck("instructor"), getInstructorCourse);
+router
+  .route("/instructor/course/:id")
+  .get(authCheck, adminCheck("instructor"), getInstructorCourse)
+  .put(authCheck, adminCheck("instructor"), singleFile, updateCourseDetails);
 
 // Yet to be tested
 
-router.route("/course/buy/:id").post(authCheck, adminCheck("user","admin"), buyCourse);
-router.route('/instructor/courses').get(authCheck, adminCheck("instructor"), getInstructorCourses)
+router
+  .route("/course/buy/:id")
+  .post(authCheck, adminCheck("user", "admin"), buyCourse);
+router
+  .route("/instructor/courses")
+  .get(authCheck, adminCheck("instructor"), getInstructorCourses);
 
 export default router;

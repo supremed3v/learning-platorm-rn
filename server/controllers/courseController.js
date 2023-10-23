@@ -243,7 +243,7 @@ export const updateLecture = async (req, res) => {
           "mkv",
           "webm",
         ],
-        chunk_size: 6000000,
+        chunk_size: 6000000, // 6MB
       });
 
       const result2 = await cloudinary.v2.uploader.destroy(
@@ -463,6 +463,59 @@ export const getInstructorCourse = async (req, res) => {
     res.status(500).json({
       error: error.message,
       success: false,
+    });
+  }
+};
+
+export const updateCourseDetails = async (req, res) => {
+  const { title, description, category, amount } = req.body;
+
+  try {
+    const course = await Course.findById(req.params.id);
+
+    if (!course) {
+      return res.status(400).json({
+        error: "Course not found",
+      });
+    }
+
+    if (!title || !description || !category || !amount) {
+      return res.status(400).json({
+        error: "All fields are required",
+      });
+    }
+
+    if (req.file) {
+      const file = req.file;
+      const data = parseData(file);
+      if (!data) {
+        return res.status(400).json({
+          error: "Please upload a valid image",
+        });
+      }
+      const result = await cloudinary.v2.uploader.upload(data.content, {
+        folder: "courses",
+        width: 150,
+        crop: "scale",
+      });
+      const result2 = await cloudinary.v2.uploader.destroy(
+        course.poster.public_id
+      );
+      if (result2) {
+        course.poster.public_id = result.public_id;
+        course.poster.url = result.secure_url;
+      }
+    }
+
+    course.title = title;
+    course.description = description;
+    course.category = category;
+    course.amount = amount;
+
+    await course.save();
+  } catch (error) {
+    return res.status(500).json({
+      error: error,
     });
   }
 };
