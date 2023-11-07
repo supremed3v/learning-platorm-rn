@@ -299,9 +299,10 @@ export const buyCourse = async (req, res) => {
       message: "Course purchased successfully",
     });
   } catch (error) {
-    return res.status(500).json({
+    res.status(500).json({
       error: error.message,
     });
+    console.log(error);
   }
 };
 
