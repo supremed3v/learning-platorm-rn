@@ -278,8 +278,9 @@ export const updateLecture = async (req, res) => {
 export const buyCourse = async (req, res) => {
   try {
     const course = await Course.findById(req.params.id);
+    const userId = req.params.id || req.body.id || req.user._id;
 
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(userId);
 
     if (user.playList.includes(course._id)) {
       return res.status(400).json({
